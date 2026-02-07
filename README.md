@@ -1,5 +1,7 @@
 # iRail MCP Server
 
+> **Disclaimer:** This project was vibe coded and is **not affiliated with or supported by [iRail vzw](https://hello.irail.be)**. Train data may be inaccurate or outdated. Always verify with official sources ([belgiantrain.be](https://www.belgiantrain.be) or the NMBS/SNCB app) before making travel decisions.
+
 A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that provides Belgian railway travel information via the [iRail API](https://api.irail.be).
 
 ## Features
