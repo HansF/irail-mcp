@@ -15,7 +15,6 @@ from irail_mcp.server import (
     _get_train_info,
     _get_disturbances,
 )
-from irail_mcp.irail_client import iRailClient
 
 
 class TestDateParsing:
@@ -241,6 +240,7 @@ class TestClientInitialization:
     @pytest.mark.asyncio
     async def test_client_context_manager(self):
         """Test client can be used as async context manager."""
+        from irail_mcp.irail_client import iRailClient
         async with iRailClient() as client:
             assert client.client is not None
 

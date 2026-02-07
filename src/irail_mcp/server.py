@@ -9,6 +9,7 @@ from mcp.server import Server
 from mcp.types import Tool, TextContent
 
 from .irail_client import iRailClient
+from .station_search import search_stations as offline_search_stations
 
 logger = logging.getLogger(__name__)
 
@@ -234,10 +235,12 @@ async def list_tools() -> list[Tool]:
 async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     """Handle tool calls."""
     try:
+        if name == "search_stations":
+            result = _search_stations(arguments)
+            return [TextContent(type="text", text=result)]
+
         async with iRailClient() as client:
-            if name == "search_stations":
-                result = await _search_stations(client, arguments)
-            elif name == "get_liveboard":
+            if name == "get_liveboard":
                 result = await _get_liveboard(client, arguments)
             elif name == "find_connections":
                 result = await _find_connections(client, arguments)
@@ -255,20 +258,14 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         return [TextContent(type="text", text=error_msg)]
 
 
-async def _search_stations(client: iRailClient, arguments: dict) -> str:
-    """Search for stations."""
+def _search_stations(arguments: dict) -> str:
+    """Search for stations using bundled offline data."""
     query = arguments.get("query", "")
-    lang = arguments.get("lang", "en")
 
     if not query:
         return "Error: 'query' parameter is required"
 
-    try:
-        result = await client.search_stations(query, lang=lang)
-    except ValueError as e:
-        return f"Error searching stations: {str(e)}"
-
-    stations = result.get("station", [])
+    stations = offline_search_stations(query)
 
     if not stations:
         return f"No stations found matching '{query}'"
@@ -276,11 +273,16 @@ async def _search_stations(client: iRailClient, arguments: dict) -> str:
     lines = [f"Found {len(stations)} station(s) matching '{query}':\n"]
     for station in stations[:10]:  # Limit to 10 results
         name = station.get("name", "Unknown")
-        standard_name = station.get("standardname", "")
-        lat = station.get("locationY", "?")
-        lon = station.get("locationX", "?")
+        alt_names = [
+            station.get(f"alternative_{lang}", "")
+            for lang in ("fr", "nl", "de", "en")
+        ]
+        alt_str = ", ".join(n for n in alt_names if n)
+        lat = station.get("latitude", "?")
+        lon = station.get("longitude", "?")
+        display_alt = f" ({alt_str})" if alt_str else ""
         lines.append(
-            f"• {name} ({standard_name}) - Coordinates: {lat}, {lon}"
+            f"• {name}{display_alt} - Coordinates: {lat}, {lon}"
         )
 
     if len(stations) > 10:

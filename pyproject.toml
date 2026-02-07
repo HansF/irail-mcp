@@ -1,6 +1,6 @@
 [project]
 name = "irail-mcp"
-version = "0.1.1"
+version = "0.2.0"
 description = "MCP server for Belgian railway data via the iRail API"
 authors = [{name = "Hans F"}]
 readme = "README.md"

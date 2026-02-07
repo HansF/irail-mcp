@@ -30,5 +30,7 @@ jobs:
         with:
           python-version: "3.13"
       - run: pip install build
+      - name: Refresh station data
+        run: python scripts/update_stations.py
       - run: python -m build
       - uses: pypa/gh-action-pypi-publish@release/v1

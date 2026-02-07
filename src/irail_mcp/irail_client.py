@@ -81,42 +81,6 @@ class iRailClient:
                 )
             raise
 
-    async def get_stations(self, lang: str = "en") -> dict[str, Any]:
-        """Fetch all stations.
-
-        Args:
-            lang: Language code (en, nl, fr, de, it)
-
-        Returns:
-            Dictionary with 'station' key containing list of stations.
-        """
-        return await self._request("GET", "/stations/", params={"lang": lang})
-
-    async def search_stations(self, query: str, lang: str = "en") -> dict[str, Any]:
-        """Search for stations by name.
-
-        Args:
-            query: Station name or partial name to search for
-            lang: Language code
-
-        Returns:
-            Dictionary with matching stations.
-        """
-        # The iRail API doesn't have a dedicated search endpoint,
-        # so we fetch all stations and filter client-side
-        stations = await self.get_stations(lang=lang)
-
-        # Filter stations by name
-        if "station" in stations:
-            stations["station"] = [
-                s
-                for s in stations["station"]
-                if query.lower() in s.get("name", "").lower()
-                or query.lower() in s.get("standardname", "").lower()
-            ]
-
-        return stations
-
     async def get_liveboard(
         self,
         station: str,
