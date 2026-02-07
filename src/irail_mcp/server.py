@@ -483,6 +483,11 @@ async def main():
         await app.run(read_stream, write_stream, init_options)
 
 
-if __name__ == "__main__":
+def cli():
+    """Entry point for console script."""
     import asyncio
     asyncio.run(main())
+
+
+if __name__ == "__main__":
+    cli()

@@ -31,8 +31,8 @@ Add to your project's `.mcp.json`:
 {
   "mcpServers": {
     "irail": {
-      "command": "uv",
-      "args": ["run", "--directory", "/path/to/irail-mcp", "python", "-m", "irail_mcp.server"]
+      "command": "uvx",
+      "args": ["irail-mcp"]
     }
   }
 }
